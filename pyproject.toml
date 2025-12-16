@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vllm-metal"
+version = "0.1.0"
+description = "Community maintained hardware plugin for vLLM on Apple Silicon"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+authors = [
+    {name = "vLLM Team"}
+]
+keywords = ["vllm", "metal", "apple", "silicon", "mps", "llm", "inference"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS :: MacOS X",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "torch>=2.1.0",
+    "transformers>=4.40.0",
+    "accelerate>=0.26.0",
+    "safetensors>=0.4.0",
+    "numpy>=1.24.0",
+    "psutil>=5.9.0",
+]
+
+[project.optional-dependencies]
+vllm = ["vllm>=0.6.0"]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+mlx = [
+    "mlx>=0.10.0",
+    "mlx-lm>=0.10.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/vllm-project/vllm-metal"
+Repository = "https://github.com/vllm-project/vllm-metal"
+Issues = "https://github.com/vllm-project/vllm-metal/issues"
+
+[project.entry-points."vllm.platform"]
+metal = "vllm_metal:register"
+
+[project.entry-points."vllm.general_plugins"]
+metal_ops = "vllm_metal:register_ops"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["vllm_metal*"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
