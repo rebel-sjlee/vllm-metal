@@ -1,7 +1,5 @@
 # vllm-metal
 
-Community maintained hardware plugin for vLLM on Apple Silicon.
-
 This plugin enables vLLM to run on Apple Silicon Macs using Metal Performance Shaders (MPS) for GPU acceleration.
 
 ## Features

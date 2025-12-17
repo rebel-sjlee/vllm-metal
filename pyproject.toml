@@ -53,7 +53,7 @@ Homepage = "https://github.com/vllm-project/vllm-metal"
 Repository = "https://github.com/vllm-project/vllm-metal"
 Issues = "https://github.com/vllm-project/vllm-metal/issues"
 
-[project.entry-points."vllm.platform"]
+[project.entry-points."vllm.platform_plugins"]
 metal = "vllm_metal:register"
 
 [project.entry-points."vllm.general_plugins"]
