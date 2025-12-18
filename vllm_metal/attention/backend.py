@@ -248,16 +248,9 @@ class MetalAttentionImpl(AttentionImpl):
             key = key.repeat_interleave(self.num_queries_per_kv, dim=1)
             value = value.repeat_interleave(self.num_queries_per_kv, dim=1)
 
-        # Metal kernels support head_dim of 64, 128, 256
-        # Fall back to PyTorch SDPA for unsupported sizes
-        head_dim = query.shape[-1]
-        metal_supported_head_dims = (64, 128, 256)
-
         # NOTE: Metal SDPA kernel has issues - using PyTorch SDPA fallback for now
         # TODO: Fix Metal SDPA kernel dispatch (threadgroup vs thread indexing)
-        # if _ensure_metal_initialized() and head_dim in metal_supported_head_dims:
-        #     # Use Rust/Metal kernel with zero-copy from CPU tensors
-        #     ...
+        # Metal kernels support head_dim of 64, 128, 256
 
         # Use PyTorch SDPA (well-optimized for MPS)
         # SDPA expects: [batch, num_heads, seq_len, head_size]
@@ -292,20 +285,9 @@ class MetalAttentionImpl(AttentionImpl):
         """
         batch_size = query.shape[0]
 
-        # Metal kernels support head_dim of 64, 128, 256
-        # Fall back to PyTorch SDPA for unsupported sizes
-        head_dim = query.shape[-1]
-        metal_supported_head_dims = (64, 128, 256)
-
         # NOTE: Metal paged attention kernel has issues - using PyTorch fallback for now
         # TODO: Fix Metal paged attention kernel dispatch (threadgroup vs thread indexing)
-        # if (
-        #     _ensure_metal_initialized()
-        #     and kv_cache is not None
-        #     and head_dim in metal_supported_head_dims
-        # ):
-        #     # Use Rust/Metal paged attention kernel
-        #     ...
+        # Metal kernels support head_dim of 64, 128, 256
 
         # Use PyTorch loop-based decode
         outputs = []
@@ -390,9 +372,6 @@ class MetalAttentionImpl(AttentionImpl):
             (keys, values) both with shape [context_len, num_kv_heads, head_size]
         """
         block_size = kv_cache.shape[2]
-        num_kv_heads = kv_cache.shape[3]
-        head_size = kv_cache.shape[4]
-        num_blocks_needed = (context_len + block_size - 1) // block_size
 
         # Vectorized approach: compute all slot positions and gather at once
         # Create flat indices for all tokens we need
