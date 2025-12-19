@@ -64,7 +64,7 @@ try:
     from vllm.v1.worker.gpu_worker import Worker as GPUWorker
 except ImportError:
     try:
-        from vllm.worker.worker import Worker as GPUWorker
+        from vllm.worker.worker import Worker as GPUWorker  # type: ignore[no-redef]
     except ImportError:
         GPUWorker = object  # type: ignore[misc, assignment]
 

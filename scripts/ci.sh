@@ -1,16 +1,18 @@
 #!/bin/bash
 
 smoke_test() {
+  section "Running smoke test"
+
   # 1. Start vLLM in the background
   vllm serve Qwen/Qwen3-0.6B &
-    
+
   # Store the process ID
   local vllm_pid=$!
 
   # 2. Wait for the server to be ready
   echo "Waiting for vLLM to start..."
   local url="http://localhost:8000/health"
-  if ! curl --retry 8 --retry-all-errors -s "$url" > /dev/null; then
+  if ! curl --retry 4 --retry-all-errors -s "$url" > /dev/null; then
     echo "vLLM failed to start."
 
     kill $vllm_pid
