@@ -293,8 +293,6 @@ class MetalModelRunner:
         Returns:
             SamplingMetadata for the batch
         """
-        batch_size = len(sampling_params_list)
-
         # Determine sampling mode
         all_greedy = all(sp.temperature < 1e-5 for sp in sampling_params_list)
         all_random = not all_greedy and all(
@@ -381,7 +379,8 @@ class MetalModelRunner:
         mx.eval(logits)
 
         # Convert MLX logits to torch and sample using vLLM's Sampler
-        logits_torch = mlx_to_torch(logits[:, -1, :], device="cpu")
+        # Cast to float32 for numpy conversion (numpy doesn't support bfloat16)
+        logits_torch = mlx_to_torch(logits[:, -1, :].astype(mx.float32), device="cpu")
         metadata = self._make_sampling_metadata([sampling_params], [[]])
         output = self._sampler.forward(logits_torch, metadata)
         next_token = int(output.sampled_token_ids[0, 0].item())
@@ -480,7 +479,8 @@ class MetalModelRunner:
             mx.eval(logits)
 
             # Sample using vLLM's Sampler with request's params
-            logits_torch = mlx_to_torch(logits[:, -1, :], device="cpu")
+            # Cast to float32 for numpy conversion (numpy doesn't support bfloat16)
+            logits_torch = mlx_to_torch(logits[:, -1, :].astype(mx.float32), device="cpu")
             metadata = self._make_sampling_metadata(
                 [state.sampling_params], [state.token_ids]
             )

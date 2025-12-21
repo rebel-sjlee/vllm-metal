@@ -1,19 +1,16 @@
 # SPDX-License-Identifier: Apache-2.0
 """Tests for Metal sampling with vLLM Sampler integration."""
 
+import mlx.core as mx
 import numpy as np
 import pytest
 import torch
-import mlx.core as mx
-
-from vllm.sampling_params import SamplingParams
 from vllm.utils.torch_utils import make_tensor_with_pad
+from vllm.v1.sample.logits_processor import LogitsProcessors
 from vllm.v1.sample.metadata import SamplingMetadata
 from vllm.v1.sample.sampler import Sampler
-from vllm.v1.sample.logits_processor import LogitsProcessors
 
-from vllm_metal.pytorch_backend.tensor_bridge import mlx_to_torch, torch_to_mlx
-
+from vllm_metal.pytorch_backend.tensor_bridge import mlx_to_torch
 
 VOCAB_SIZE = 1024
 MAX_NUM_PROMPT_TOKENS = 64
@@ -181,7 +178,7 @@ class TestMLXToTorchSampling:
         logits_mlx = mx.zeros((batch_size, VOCAB_SIZE))
         # Set first token to have high probability
         logits_list = []
-        for i in range(batch_size):
+        for _ in range(batch_size):
             row = mx.zeros((VOCAB_SIZE,))
             row = row.at[0].add(10.0)
             logits_list.append(row)
