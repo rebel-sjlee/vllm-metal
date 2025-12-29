@@ -342,7 +342,7 @@ class MetalModelRunner:
         # Pass empty lists and set pin_memory=False to avoid device mismatch
         batch_size = len(sampling_params_list)
         vocab_size = self.model_args.get("vocab_size", 32000)
-        empty_prompt_lists = [[] for _ in range(batch_size)]
+        empty_prompt_lists: list[list[int]] = [[] for _ in range(batch_size)]
         prompt_token_ids = make_tensor_with_pad(
             empty_prompt_lists,
             pad=vocab_size,
